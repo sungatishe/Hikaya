@@ -20,7 +20,7 @@ type APIHandlerMovie struct {
 // Movie структура фильма для ответа
 type Movie struct {
 	Title       string `json:"title"`
-	Cover       string `json:"cover"`
+	Poster      string `json:"poster"`
 	Description string `json:"description"`
 	Year        int    `json:"year"`
 }

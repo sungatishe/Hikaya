@@ -14,5 +14,8 @@ func NewRoutes(r chi.Router) *Routes {
 }
 
 func (rt *Routes) SetupRouteMovie(movieHandler *handlers.UserListHandler) {
-	rt.r.Post("/add-to-list", movieHandler.AddMovieToUserList)
+	rt.r.Post("/userList", movieHandler.AddMovieToUserList)
+	rt.r.Get("/userList/{id}", movieHandler.GetUsersMovieList)
+	rt.r.Put("/userList/{userID}/{movieID}", movieHandler.UpdateMovieListType)
+	rt.r.Delete("/userList/{userID}/{movieID}", movieHandler.DeleteMovieFromUserList)
 }

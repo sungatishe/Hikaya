@@ -4,6 +4,7 @@ import (
 	"auth-service/internal/service"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -94,4 +95,23 @@ func (u *UserHandler) LogOut(rw http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(rw).Encode(map[string]string{
 		"message": "Logout Successfully",
 	})
+}
+
+func (u *UserHandler) ValidateToken(rw http.ResponseWriter, r *http.Request) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+		http.Error(rw, "Invalid authorization header", http.StatusUnauthorized)
+		return
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	user, err := u.userService.GetUserFromToken(tokenString)
+	if err != nil {
+		http.Error(rw, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+	json.NewEncoder(rw).Encode(user)
 }

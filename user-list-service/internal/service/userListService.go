@@ -5,7 +5,7 @@ import (
 	"user-list-service/internal/repository"
 )
 
-type UserService interface {
+type UserListService interface {
 	CreateUserMovieInList(userList models.UserList) error
 	GetUserMovieList(userID uint) ([]models.UserList, error)
 	UpdateUserListTypeMovieList(userID, movieID uint, listType string) error
@@ -13,32 +13,32 @@ type UserService interface {
 	//HandleUserCreated(userData map[string]interface{}) error
 }
 
-type userService struct {
+type userListService struct {
 	userRepo repository.UserListRepository
 }
 
-func NewUserService(userRepo repository.UserListRepository) UserService {
-	return &userService{userRepo}
+func NewUserService(userRepo repository.UserListRepository) UserListService {
+	return &userListService{userRepo}
 }
 
-func (u *userService) CreateUserMovieInList(userList models.UserList) error {
+func (u *userListService) CreateUserMovieInList(userList models.UserList) error {
 	return u.userRepo.CreateUserMovieInList(userList)
 }
 
-func (u *userService) GetUserMovieList(userID uint) ([]models.UserList, error) {
+func (u *userListService) GetUserMovieList(userID uint) ([]models.UserList, error) {
 	return u.userRepo.GetUserMovieList(userID)
 }
 
-func (u *userService) UpdateUserListTypeMovieList(userID, movieID uint, listType string) error {
+func (u *userListService) UpdateUserListTypeMovieList(userID, movieID uint, listType string) error {
 	return u.userRepo.UpdateUserListTypeMovieList(userID, movieID, listType)
 }
 
-func (u *userService) DeleteFromUserList(userID, movieID uint) error {
+func (u *userListService) DeleteFromUserList(userID, movieID uint) error {
 	return u.userRepo.DeleteFromUserList(userID, movieID)
 }
 
 //
-//func (u *userService) HandleUserCreated(userData map[string]interface{}) error {
+//func (u *userListService) HandleUserCreated(userData map[string]interface{}) error {
 //	user := &models.User{
 //		ID:    int(userData["id"].(float64)), // Преобразование float64 в int
 //		Name:  userData["name"].(string),

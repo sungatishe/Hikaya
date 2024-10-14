@@ -25,13 +25,13 @@ func NewUserListRepository(db *gorm.DB) UserListRepository {
 func (u *userListRepository) CreateUserMovieInList(userList models.UserList) error {
 	exists, err := u.isMovieInAnyList(userList.UserID, userList.MovieID)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check if movie is in any list: %w", err)
 	}
 	if exists {
 		return fmt.Errorf("movie is already in one of the lists")
 	}
-
-	return u.db.Create(userList).Error
+	fmt.Printf("Creating user movie list: %+v\n", userList)
+	return u.db.Create(&userList).Error
 }
 
 func (u *userListRepository) GetUserMovieList(userID uint) ([]models.UserList, error) {

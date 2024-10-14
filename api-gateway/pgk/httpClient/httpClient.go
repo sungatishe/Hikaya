@@ -16,6 +16,15 @@ func PostRequest(url string, body io.Reader) ([]byte, error) {
 	return io.ReadAll(resp.Body)
 }
 
+// TODO: FIX THESE FUNCTIONS
+func PostRequestLogin(url string, body io.Reader) (*http.Response, error) {
+	resp, err := http.Post(url, "application/json", body)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func GetRequest(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {

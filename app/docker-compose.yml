@@ -1,10 +1,12 @@
+version: '3.8'  # Убедитесь, что версия поддерживает нужные вам функции
+
 services:
   auth-db:
     image: postgres:15
     container_name: auth-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: hashhash
       POSTGRES_DB: db
     volumes:
       - auth-db-data:/var/lib/postgresql/data
@@ -12,13 +14,18 @@ services:
       - mynetwork
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   movie-db:
     image: postgres:15
     container_name: movie-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: hashhash
       POSTGRES_DB: db
     volumes:
       - movie-db-data:/var/lib/postgresql/data
@@ -26,50 +33,30 @@ services:
       - mynetwork
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-
-  api-gateway-service:
-    build:
-      context: ../api-gateway
-    container_name: api-gateway
-    env_file:
-      - ../api-gateway/.env
-    depends_on:
-      - auth-service
-      - movie-service
-      - rabbitmq
+  user-list-db:
+    image: postgres:15
+    container_name: user-list-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    volumes:
+      - user-list-db:/var/lib/postgresql/data
     networks:
       - mynetwork
     ports:
-      - "8080:8080"
-
-  auth-service:
-    build:
-      context: ../auth-service
-    container_name: auth-service
-    env_file:
-      - ../auth-service/.env
-    depends_on:
-      - auth-db
-      - rabbitmq
-    networks:
-      - mynetwork
-    ports:
-      - "8081:8081"
-
-  movie-service:
-    build:
-      context: ../movie-service
-    container_name: movie-service
-    env_file:
-      - ../movie-service/.env
-    depends_on:
-      - movie-db
-      - rabbitmq
-    networks:
-      - mynetwork
-    ports:
-      - "8082:8082"
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:3-management  # Официальный образ RabbitMQ с Management Plugin
@@ -82,10 +69,82 @@ services:
       RABBITMQ_DEFAULT_PASS: guest  # Установите пароль по умолчанию
     networks:
       - mynetwork
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmqctl ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build:
+      context: ../auth-service
+    container_name: auth-service
+    env_file:
+      - ../auth-service/.env
+    depends_on:
+      auth-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - mynetwork
+    ports:
+      - "8081:8081"
+    restart: unless-stopped
+
+  movie-service:
+    build:
+      context: ../movie-service
+    container_name: movie-service
+    env_file:
+      - ../movie-service/.env
+    depends_on:
+      movie-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - mynetwork
+    ports:
+      - "8082:8082"
+    restart: unless-stopped
+
+  user-list-service:
+    build:
+      context: ../user-list-service
+    container_name: user-list-service
+    env_file:
+      - ../user-list-service/.env
+    depends_on:
+      user-list-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - mynetwork
+    ports:
+      - "8083:8083"
+    restart: unless-stopped
+
+  api-gateway-service:
+    build:
+      context: ../api-gateway
+    container_name: api-gateway
+    env_file:
+      - ../api-gateway/.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - mynetwork
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
 
 volumes:
   auth-db-data:
   movie-db-data:
+  user-list-db:
 
 networks:
   mynetwork:

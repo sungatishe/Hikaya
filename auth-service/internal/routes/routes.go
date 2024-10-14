@@ -17,5 +17,6 @@ func (rt *Routes) SetupRouteUser(userHandler *handlers.UserHandler) {
 	rt.r.Post("/register", userHandler.Register)
 	rt.r.Post("/login", userHandler.Login)
 	rt.r.Get("/user", userHandler.User)
+	rt.r.Get("/validate-token", userHandler.ValidateToken)
 	rt.r.Post("/logout", userHandler.LogOut)
 }
