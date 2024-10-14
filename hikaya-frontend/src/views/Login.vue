@@ -19,8 +19,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
 export default {
   data() {
     return {
@@ -29,8 +27,6 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['fetchUserData']), // Подключаем экшн для получения данных о пользователе
-
     async login() {
       try {
         const response = await fetch('http://localhost:8080/login', {
@@ -46,7 +42,10 @@ export default {
         });
 
         if (response.ok) {
-          await this.fetchUserData(); // Получаем информацию о пользователе после успешного логина
+          const data = await response.json(); // Получаем токен
+
+          // Получаем информацию о пользователе после успешного логина
+          await this.fetchUserData();
 
           this.$router.push('/movies'); // Перенаправление на страницу с фильмами
           this.$emit('loggedIn'); // Эмитируем событие входа
@@ -55,6 +54,23 @@ export default {
         }
       } catch (error) {
         console.error('Error during login:', error);
+      }
+    },
+
+    async fetchUserData() {
+      try {
+        const response = await fetch('http://localhost:8080/user', {
+          method: 'GET',
+          credentials: 'include', // Для отправки куков
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
     },
   },
