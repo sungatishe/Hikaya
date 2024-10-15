@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"api-gateway/config"
+	"api-gateway/config/cache"
 	"api-gateway/internal/rabbitMQ"
 	"api-gateway/pgk/httpClient"
 	"bytes"
@@ -10,11 +11,13 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 )
 
 type APIHandlerMovie struct {
-	cfg      *config.Config
-	rabbitMQ *rabbitMQ.RabbitMQ
+	cfg         *config.Config
+	rabbitMQ    *rabbitMQ.RabbitMQ
+	RedisClient *cache.RedisClient
 }
 
 // Movie структура фильма для ответа
@@ -25,17 +28,40 @@ type Movie struct {
 	Year        int    `json:"year"`
 }
 
-func NewAPIHandlerMovie(cfg *config.Config) APIHandlerMovie {
+func NewAPIHandlerMovie(cfg *config.Config, RedisClient *cache.RedisClient) APIHandlerMovie {
 	rmq := rabbitMQ.NewRabbitMQ(cfg.RabbitMQURL)
-	return APIHandlerMovie{cfg, rmq}
+	return APIHandlerMovie{cfg, rmq, RedisClient}
 }
 
 func (a *APIHandlerMovie) GetMovies(rw http.ResponseWriter, r *http.Request) {
+	cacheKey := "movies_cache"
+
+	cachedMovies, err := a.RedisClient.GetCache(cacheKey)
+	if err != nil {
+		http.Error(rw, "Error accessing cache", http.StatusInternalServerError)
+		return
+	}
+
+	if cachedMovies != "" {
+		log.Println("Cache hit, returning cached data")
+		rw.WriteHeader(http.StatusOK)
+		rw.Write([]byte(cachedMovies))
+		return
+	}
+
+	log.Println("Cache is nil, fetching from movie service..")
+
 	resp, err := httpClient.GetRequest(a.cfg.MovieServiceURL + "/movies")
 	if err != nil {
 		http.Error(rw, "Error getting movies", http.StatusInternalServerError)
 		return
 	}
+
+	err = a.RedisClient.SetCache(cacheKey, string(resp), 10*time.Minute)
+	if err != nil {
+		log.Printf("Failed to cache movies: %v", err)
+	}
+
 	rw.WriteHeader(http.StatusOK)
 	rw.Write(resp)
 }

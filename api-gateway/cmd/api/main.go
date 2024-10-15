@@ -1,29 +1,7 @@
 package main
 
-import (
-	"api-gateway/config"
-	"api-gateway/internal/handlers"
-	"api-gateway/internal/routes"
-	"github.com/go-chi/chi/v5"
-	"net/http"
-)
+import "api-gateway/internal/app"
 
 func main() {
-	cfg := config.LoadConfig()
-
-	router := chi.NewRouter()
-	APIHandlerAuth := handlers.NewAPIHandlerAuth(cfg)
-	APIHandlerMovie := handlers.NewAPIHandlerMovie(cfg)
-	APIHandlerUserList := handlers.NewAPIHandlerUserList(cfg)
-
-	route := routes.NewRoutes(router)
-
-	route.SetupRouteAPIAuth(&APIHandlerAuth)
-	route.SetupRouteAPIMovie(&APIHandlerMovie)
-	route.SetupRouteAPIUserList(&APIHandlerUserList)
-
-	err := http.ListenAndServe(":8080", router)
-	if err != nil {
-		panic(err)
-	}
+	app.Run()
 }
