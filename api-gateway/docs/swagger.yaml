@@ -1,0 +1,143 @@
+definitions:
+  handlers.Movie:
+    properties:
+      description:
+        type: string
+      poster:
+        type: string
+      title:
+        type: string
+      year:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /movies:
+    get:
+      description: Получить список всех фильмов
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handlers.Movie'
+            type: array
+        "500":
+          description: Error getting movies
+          schema:
+            type: string
+      summary: Get all movies
+      tags:
+      - movies
+    post:
+      description: Создать новый фильм, отправив событие в очередь RabbitMQ
+      parameters:
+      - description: Movie details
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Movie'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Event sent successfully
+          schema:
+            type: string
+        "400":
+          description: No required fields
+          schema:
+            type: string
+        "500":
+          description: Error in sending event
+          schema:
+            type: string
+      summary: Create a new movie
+      tags:
+      - movies
+  /movies/{id}:
+    delete:
+      description: Удалить фильм по его ID, отправив событие в очередь RabbitMQ
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Event sent successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "500":
+          description: Error in sending event
+          schema:
+            type: string
+      summary: Delete a movie
+      tags:
+      - movies
+    get:
+      description: Получить информацию о фильме по его ID
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.Movie'
+        "404":
+          description: Movie not found
+          schema:
+            type: string
+      summary: Get movie by ID
+      tags:
+      - movies
+    put:
+      description: Обновить информацию о фильме по его ID
+      parameters:
+      - description: Movie ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Movie details
+        in: body
+        name: movie
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Movie'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Movie updated successfully
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Error updating movie
+          schema:
+            type: string
+      summary: Update a movie
+      tags:
+      - movies
+swagger: "2.0"

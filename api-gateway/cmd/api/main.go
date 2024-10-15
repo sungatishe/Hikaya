@@ -1,6 +1,8 @@
 package main
 
-import "api-gateway/internal/app"
+import (
+	"api-gateway/internal/app"
+)
 
 func main() {
 	app.Run()
