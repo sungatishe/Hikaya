@@ -8,7 +8,7 @@ APP_DIR := ./app
 .PHONY: build down
 
 # Build target
-build:
+up_build:
 	@echo "Initializing Swagger documentation..."
 	cd $(API_GATEWAY_DIR) && swag init -d ./cmd/api,./
 	@echo "Building Docker containers..."
