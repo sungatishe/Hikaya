@@ -33,4 +33,4 @@ To install Hikaya, follow these steps:
     - Planned
     - Watched
     - Abandoned
-
+- Review/Rating: Users can rate movies and submit reviews
