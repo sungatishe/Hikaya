@@ -21,18 +21,20 @@ func Run() {
 	APIHandlerAuth := handlers.NewAPIHandlerAuth(cfg)
 	APIHandlerMovie := handlers.NewAPIHandlerMovie(cfg, redisClient)
 	APIHandlerUserList := handlers.NewAPIHandlerUserList(cfg)
+	APIHandlerRating := handlers.NewAPIHandlerRating(cfg)
 
 	route := routes.NewRoutes(router)
 
 	route.SetupRouteAPIAuth(&APIHandlerAuth)
 	route.SetupRouteAPIMovie(&APIHandlerMovie)
 	route.SetupRouteAPIUserList(&APIHandlerUserList)
+	route.SetupRouteAPIRating(&APIHandlerRating)
 
 	router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
 	))
 
-	httpServer := server.NewServer(":8080", router)
+	httpServer := server.NewServer(cfg.Port, router)
 	httpServer.Runserver()
 
 }

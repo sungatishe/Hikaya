@@ -22,6 +22,6 @@ func Run() {
 	route := routes.NewRoutes(router)
 	route.SetupRatingRoutes(ratingHandler)
 
-	httpServer := server.NewServer("8084", router)
+	httpServer := server.NewServer(":8084", router)
 	httpServer.RunServer()
 }

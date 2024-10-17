@@ -18,13 +18,13 @@ func (r ratingService) CreateMovieReview(review *models.Review) error {
 }
 
 func (r ratingService) GetReviewsByMovieID(movieID uint) ([]models.Review, error) {
-	return r.GetReviewsByMovieID(movieID)
+	return r.repo.GetReviewsByMovieID(movieID)
 }
 
 func (r ratingService) CalculateMovieRating(movieID uint) (float64, error) {
-	return r.CalculateMovieRating(movieID)
+	return r.repo.CalculateMovieRating(movieID)
 }
 
 func (r ratingService) UpdateMovieRating(movieID uint, avrRating float64, reviewCount int) error {
-	return r.UpdateMovieRating(movieID, avrRating, reviewCount)
+	return r.repo.UpdateMovieRating(movieID, avrRating, reviewCount)
 }

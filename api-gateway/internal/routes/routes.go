@@ -46,3 +46,9 @@ func (rt *Routes) SetupRouteAPIUserList(APIHandlerUserList *handlers.APIHandlerU
 	rt.r.Put("/userList/{userID}/{movieID}", middleware.AuthMiddleware(APIHandlerUserList.UpdateMovieListType))
 	rt.r.Delete("/userList/{userID}/{movieID}", middleware.AuthMiddleware(APIHandlerUserList.DeleteMovieFromUserList))
 }
+
+func (rt *Routes) SetupRouteAPIRating(APIHandlerRating *handlers.APIHandlerRating) {
+	rt.r.Post("/reviews", middleware.AuthMiddleware(APIHandlerRating.CreateMovieReview))
+	rt.r.Get("/movie/{id}/reviews", APIHandlerRating.GetMovieReviews)
+	rt.r.Get("/movie/{id}/rating", APIHandlerRating.GetMovieRating)
+}

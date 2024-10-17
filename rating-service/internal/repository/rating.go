@@ -2,6 +2,7 @@ package repository
 
 import (
 	"gorm.io/gorm"
+	"math"
 	"rating-service/internal/models"
 )
 
@@ -41,7 +42,8 @@ func (r *ratingRepository) CalculateMovieRating(movieID uint) (float64, error) {
 	}
 
 	avgRating := float64(totalRating) / float64(len(reviews))
-	return avgRating, nil
+	roundedRating := math.Round(avgRating*100) / 100
+	return roundedRating, nil
 }
 
 func (r *ratingRepository) UpdateMovieRating(movieID uint, avrRating float64, reviewCount int) error {

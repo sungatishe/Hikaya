@@ -7,6 +7,7 @@ type Config struct {
 	AuthServiceURL     string
 	MovieServiceURL    string
 	UserListServiceURL string
+	RatingServiceURL   string
 	JWTSecret          string
 	RabbitMQURL        string
 }
@@ -17,6 +18,7 @@ func LoadConfig() *Config {
 		AuthServiceURL:     os.Getenv("AUTH_SERVICE_URL"),
 		MovieServiceURL:    os.Getenv("MOVIE_SERVICE_URL"),
 		UserListServiceURL: os.Getenv("USER_LIST_SERVICE_URL"),
+		RatingServiceURL:   os.Getenv("RATING_SERVICE_URL"),
 		JWTSecret:          os.Getenv("JWT_SECRET"),
 		RabbitMQURL:        os.Getenv("RABBITMQURL"),
 	}
