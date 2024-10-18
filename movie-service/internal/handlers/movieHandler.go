@@ -101,7 +101,7 @@ func (m *MovieHandler) DeleteMovie(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusNoContent)
 }
 
-func (h *MovieHandler) HandleDeleteMovieEvent(body []byte) {
+func (m *MovieHandler) HandleDeleteMovieEvent(body []byte) {
 	var event map[string]string
 	err := json.Unmarshal(body, &event)
 	if err != nil {
@@ -112,11 +112,11 @@ func (h *MovieHandler) HandleDeleteMovieEvent(body []byte) {
 	movieID := event["id"]
 	id, err := strconv.Atoi(movieID)
 	if err != nil {
-		log.Printf("Ошибка при десериализаdasdsadasdции события: %s", err)
+		log.Printf("Ошибка при десериализации события: %s", err)
 		return
 	}
 
-	err = h.movieService.DeleteMovie(uint(id)) // вызов метода удаления фильма
+	err = m.movieService.DeleteMovie(uint(id)) // вызов метода удаления фильма
 	if err != nil {
 		log.Printf("Ошибка при удалении фильма с ID %s: %s", movieID, err)
 		return
@@ -125,7 +125,7 @@ func (h *MovieHandler) HandleDeleteMovieEvent(body []byte) {
 	log.Printf("Фильм с ID %s был успешно удален", movieID)
 }
 
-func (h *MovieHandler) HandleCreateMovieEvent(body []byte) {
+func (m *MovieHandler) HandleCreateMovieEvent(body []byte) {
 	var movie models.Movie
 	err := json.Unmarshal(body, &movie)
 	if err != nil {
@@ -133,7 +133,7 @@ func (h *MovieHandler) HandleCreateMovieEvent(body []byte) {
 		return
 	}
 
-	err = h.movieService.CreateMovie(&movie) // вызов метода удаления фильма
+	err = m.movieService.CreateMovie(&movie) // вызов метода удаления фильма
 	if err != nil {
 		log.Printf("Error creating movie %s", err)
 		return

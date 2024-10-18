@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	"log"
 	"movie-service/config/db"
 	"movie-service/internal/handlers"
 	"movie-service/internal/rabbitMQ"
@@ -14,10 +15,19 @@ import (
 func main() {
 	db.InitDb()
 
+	searchRepo, err := repository.NewElasticSearchRepository()
+	if err != nil {
+		log.Fatalf("Ошибка при инициализации Elasticsearch: %v", err)
+	}
 	movieRepo := repository.NewMovieRepository(db.Db)
-	movieService := service.NewMovieService(movieRepo)
+	movieService := service.NewMovieService(movieRepo, searchRepo)
 	movieHandler := handlers.NewMovieHandler(movieService)
 	rmqConsumer := rabbitMQ.NewConsumer("amqp://guest:guest@rabbitmq:5672/")
+
+	err = movieService.IndexAllMovies()
+	if err != nil {
+		log.Fatalf("Failed to index movies: %v", err)
+	}
 
 	// Запуск консюмера в отдельной горутине
 	go rmqConsumer.Consume("movie_delete", movieHandler.HandleDeleteMovieEvent)
@@ -29,7 +39,7 @@ func main() {
 
 	route.SetupRouteMovie(movieHandler)
 
-	err := http.ListenAndServe(":8082", router)
+	err = http.ListenAndServe(":8082", router)
 	if err != nil {
 		panic(err)
 	}
