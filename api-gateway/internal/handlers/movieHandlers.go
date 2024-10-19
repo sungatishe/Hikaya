@@ -219,3 +219,19 @@ func (a *APIHandlerMovie) CreateMovieMQ(rw http.ResponseWriter, r *http.Request)
 	rw.WriteHeader(http.StatusAccepted)
 	rw.Write([]byte("event create movie sended"))
 }
+
+func (a *APIHandlerMovie) SearchMovies(rw http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query().Get("q")
+	if query == "" {
+		http.Error(rw, "Invalid query", http.StatusBadRequest)
+		return
+	}
+
+	resp, err := httpClient.GetRequest(a.cfg.MovieServiceURL + "/movies/search?q=" + query)
+	if err != nil {
+		http.Error(rw, "Error getting movies from search", http.StatusInternalServerError)
+		return
+	}
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(resp)
+}

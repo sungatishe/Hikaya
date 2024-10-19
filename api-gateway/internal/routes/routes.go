@@ -29,6 +29,7 @@ func (rt *Routes) SetupRouteAPIMovie(APIHandlerMovie *handlers.APIHandlerMovie) 
 	rt.r.Post("/movies", APIHandlerMovie.CreateMovieMQ)
 	rt.r.Get("/movies", APIHandlerMovie.GetMovies)
 	rt.r.Get("/movies/{id}", APIHandlerMovie.GetMovieByID)
+	rt.r.Get("/movies/search", APIHandlerMovie.SearchMovies)
 	rt.r.Put("/movies/{id}", APIHandlerMovie.UpdateMovie)
 	rt.r.Delete("/movies/{id}", APIHandlerMovie.DeleteMovieMQ)
 }

@@ -74,13 +74,11 @@ func (r *elasticSearchRepository) IndexMovie(movieID string, movieData models.Mo
 func (r *elasticSearchRepository) SearchMovies(query string) ([]map[string]interface{}, error) {
 	var buf bytes.Buffer
 
-	// Создаем JSON-запрос для поиска
 	queryStr := fmt.Sprintf(`{
 		"query": {
-			"match": {
+			"match_phrase_prefix": {
 				"title": {
-					"query": "%s",
-					"fuzziness": "AUTO" // Добавляем нечеткий поиск, если это необходимо
+					"query": "%s"
 				}
 			}
 		}
