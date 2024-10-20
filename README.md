@@ -24,6 +24,7 @@ To install Hikaya, follow these steps:
 - Ensure Docker is installed.
 3. Navigate to the project directory: **`cd Hikaya`**
 4. Build and up Docker containers: **`make up_build`**
+5. Frontend address **`http://localhost:8090/`**
 
 
 ## Usage

@@ -203,6 +203,24 @@ services:
     networks:
       - mynetwork
 
+
+  frontend:
+    build:
+      context: ../hikaya-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8090"
+    stdin_open: true
+    tty: true
+    restart: no
+    volumes:
+      - ../hikaya-frontend:/app  # Монтируйте только исходный код, а не всю директорию
+    environment:
+      - NODE_ENV=production
+    networks:
+      - mynetwork
+
+
 volumes:
   auth-db-data:
   movie-db-data:

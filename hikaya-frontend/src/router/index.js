@@ -56,6 +56,11 @@ const routes = [
         component: MovieDetails,
         props: true,
     },
+    // Обработка всех остальных маршрутов
+    {
+        path: '/:catchAll(.*)', // захватывает все несуществующие маршруты
+        redirect: { name: 'Movies' }, // перенаправление на Movies
+    },
 ];
 
 const router = createRouter({
@@ -68,7 +73,7 @@ export default router;
 // Функция проверки аутентификации
 async function fetchUserData() {
     try {
-        const response = await fetch('http://localhost:8080/user', {
+        const response = await fetch('http://api-gateway-service:8080/user', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
