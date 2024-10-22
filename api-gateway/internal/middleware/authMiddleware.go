@@ -15,8 +15,6 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		//log.Println("Validating token: ", cookie.Value)
-
 		req, err := http.NewRequest("GET", os.Getenv("AUTH_SERVICE_URL")+"/validate-token", nil)
 		if err != nil {
 			log.Println("Error creating validation request: ", err)
